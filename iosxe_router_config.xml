@@ -4,27 +4,18 @@
   Single Source of Truth: GitHub
   Target datastore: candidate → commit naar running
 
-  SAFE MODE – deze config:
-    • Raakt GEEN bestaande IP-adressen of maskers aan
-    • Raakt GEEN encapsulation/dot1Q aan
-    • Raakt GEEN shutdown-states aan
-    • Voegt WEL nieuwe configuratie-items toe (bonus punten)
-    • Werkt uitsluitend descriptions bij op interfaces
-    • Verbetert OSPF (passive-interface, default-information originate)
+  SAFE MODE:
+    - Geen IP-adressen, masks, encapsulation of shutdown aangeraakt
+    - Alleen descriptions bijgewerkt op interfaces
+    - Nieuwe config-items toegevoegd (bonus punten)
 -->
 <config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
   <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
 
-    <!-- ═══════════════════════════════════════════
-         HOSTNAME  (ongewijzigd – veilig om te herhalen)
-    ═══════════════════════════════════════════ -->
+    <!-- HOSTNAME -->
     <hostname>LAB-RA07-C02-R01</hostname>
 
-    <!-- ═══════════════════════════════════════════
-         GLOBAL SERVICE SETTINGS  (nieuw – bonus)
-         Voegt timestamps toe aan logging en debug output.
-         Bestaat nog niet → wordt puur toegevoegd.
-    ═══════════════════════════════════════════ -->
+    <!-- SERVICE TIMESTAMPS (nieuw - bonus) -->
     <service>
       <timestamps>
         <debug>
@@ -40,31 +31,17 @@
       </timestamps>
     </service>
 
-    <!-- ═══════════════════════════════════════════
-         BANNER MOTD  (nieuw – bonus / security)
-         Wettelijk vereiste toegangswaarschuwing.
-         Bestaat nog niet → wordt puur toegevoegd.
-    ═══════════════════════════════════════════ -->
+    <!-- BANNER MOTD (nieuw - bonus/security)
+         Enkelvoudige string op één regel - IOS-XE YANG vereist dit. -->
     <banner>
       <motd>
-        <banner>
-          ^
-          ******************************************************************
-          *  WAARSCHUWING: Geautoriseerde toegang uitsluitend toegestaan.  *
-          *  Alle activiteiten worden gelogd en gemonitord.                *
-          *  Onbevoegde toegang wordt strafrechtelijk vervolgd.            *
-          *  LAB-RA07-C02-R01 – Beheerd door netwerkbeheer                *
-          ******************************************************************
-          ^
-        </banner>
+        <banner>*** WAARSCHUWING: Enkel geautoriseerde toegang. Activiteiten worden gelogd. LAB-RA07-C02-R01 ***</banner>
       </motd>
     </banner>
 
-    <!-- ═══════════════════════════════════════════
-         DNS  (nieuw – bonus)
-         Voegt domeinnaam en name-servers toe.
-         Bestaat nog niet → wordt puur toegevoegd.
-    ═══════════════════════════════════════════ -->
+    <!-- IP: DNS + HTTP HARDENING (nieuw - bonus)
+         Alles in één <ip> blok - twee aparte blokken
+         veroorzaken een YANG merge conflict. -->
     <ip>
       <domain>
         <name>lab.local</name>
@@ -79,26 +56,15 @@
           <address>8.8.4.4</address>
         </no-vrf>
       </name-server>
-    </ip>
-
-    <!-- ═══════════════════════════════════════════
-         HTTP SERVER HARDENING  (nieuw – bonus / security)
-         Schakelt onveilige HTTP management interface uit.
-         Bestaat nog niet → wordt puur toegevoegd.
-    ═══════════════════════════════════════════ -->
-    <ip>
       <http>
         <server>false</server>
         <secure-server>false</secure-server>
       </http>
     </ip>
 
-    <!-- ═══════════════════════════════════════════
-         INTERFACES – ALLEEN DESCRIPTIONS BIJWERKEN
-         IPs, masks, encapsulation, shutdown → NIET aangeraakt
-    ═══════════════════════════════════════════ -->
+    <!-- INTERFACES - ALLEEN DESCRIPTIONS
+         IPs, masks, encapsulation, shutdown NIET aangeraakt -->
 
-    <!-- GigabitEthernet0/0/0 – Trunk parent -->
     <interface>
       <GigabitEthernet>
         <name>0/0/0</name>
@@ -106,7 +72,6 @@
       </GigabitEthernet>
     </interface>
 
-    <!-- GigabitEthernet0/0/0.75 – VLAN 75 Management -->
     <interface>
       <GigabitEthernet>
         <name>0/0/0.75</name>
@@ -114,7 +79,6 @@
       </GigabitEthernet>
     </interface>
 
-    <!-- GigabitEthernet0/0/0.76 – VLAN 76 Data Users -->
     <interface>
       <GigabitEthernet>
         <name>0/0/0.76</name>
@@ -122,7 +86,6 @@
       </GigabitEthernet>
     </interface>
 
-    <!-- GigabitEthernet0/0/0.77 – VLAN 77 Voice -->
     <interface>
       <GigabitEthernet>
         <name>0/0/0.77</name>
@@ -130,7 +93,6 @@
       </GigabitEthernet>
     </interface>
 
-    <!-- GigabitEthernet0/0/0.78 – VLAN 78 Reserved -->
     <interface>
       <GigabitEthernet>
         <name>0/0/0.78</name>
@@ -138,7 +100,6 @@
       </GigabitEthernet>
     </interface>
 
-    <!-- GigabitEthernet0/0/0.99 – Native VLAN -->
     <interface>
       <GigabitEthernet>
         <name>0/0/0.99</name>
@@ -146,7 +107,6 @@
       </GigabitEthernet>
     </interface>
 
-    <!-- GigabitEthernet0/0/1 – WAN Uplink -->
     <interface>
       <GigabitEthernet>
         <name>0/0/1</name>
@@ -154,11 +114,7 @@
       </GigabitEthernet>
     </interface>
 
-    <!-- ═══════════════════════════════════════════
-         NTP  (nieuw – bonus)
-         Tijdsynchronisatie via NTP-server.
-         Bestaat nog niet → wordt puur toegevoegd.
-    ═══════════════════════════════════════════ -->
+    <!-- NTP (nieuw - bonus) -->
     <ntp>
       <server>
         <server-list>
@@ -167,11 +123,7 @@
       </server>
     </ntp>
 
-    <!-- ═══════════════════════════════════════════
-         LOGGING / SYSLOG  (nieuw – bonus)
-         Stuurt logs naar een centrale syslog-server.
-         Bestaat nog niet → wordt puur toegevoegd.
-    ═══════════════════════════════════════════ -->
+    <!-- LOGGING / SYSLOG (nieuw - bonus) -->
     <logging>
       <host>
         <ipv4-host-list>
@@ -184,28 +136,38 @@
       </source-interface>
     </logging>
 
-    <!-- ═══════════════════════════════════════════
-         OSPF ROUTING – VERBETERINGEN  (bonus)
-         Voegt toe:
-           • passive-interface default  → advertiseert subnetten
-             zonder dat er OSPF hellos op die interfaces worden
-             gestuurd (security best practice)
-           • no passive-interface Gi0/0/1  → WAN-link blijft actief
-             voor OSPF neighbor relationship
-           • default-information originate  → distribueert de
-             statische default route (0.0.0.0/0) in OSPF zodat
-             andere routers die automatisch ontvangen
-         IPs en network statements worden NIET aangeraakt.
-    ═══════════════════════════════════════════ -->
+    <!-- VTY LINES - SSH HARDENING (nieuw - bonus) -->
+    <line>
+      <vty>
+        <first>0</first>
+        <last>4</last>
+        <exec-timeout>
+          <minutes>10</minutes>
+          <seconds>0</seconds>
+        </exec-timeout>
+        <transport>
+          <input>
+            <input>ssh</input>
+          </input>
+        </transport>
+        <login>
+          <local/>
+        </login>
+      </vty>
+    </line>
+
+    <!-- OSPF VERBETERINGEN (bonus)
+         no-passive-interface is het correcte YANG element
+         voor "no passive-interface GigabitEthernet0/0/1" -->
     <router>
       <ospf xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-ospf">
         <id>1</id>
         <passive-interface>
           <interface>default</interface>
         </passive-interface>
-        <passive-interface>
-          <interface>no GigabitEthernet0/0/1</interface>
-        </passive-interface>
+        <no-passive-interface>
+          <interface>GigabitEthernet0/0/1</interface>
+        </no-passive-interface>
         <default-information>
           <originate>
             <always/>

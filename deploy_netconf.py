@@ -15,7 +15,7 @@ from ncclient.operations.errors import TimeoutExpiredError
 
 # ─── INSTELLINGEN – pas deze aan naar jouw lab ─────────────────────────────
 GITHUB_RAW_URL = (
-    ""
+    "https://raw.githubusercontent.com/DaanLoemanPXL/Enterprise-Networks-Automation/main/iosxe_router_config.xml"
 )
 
 DEVICE = {
