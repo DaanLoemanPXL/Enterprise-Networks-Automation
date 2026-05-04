@@ -1,21 +1,12 @@
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  NETCONF YANG Configuration – Router LAB-RA07-C02-R01
-  Single Source of Truth: GitHub
-  Target datastore: candidate → commit naar running
-
-  SAFE MODE:
-    - Geen IP-adressen, masks, encapsulation of shutdown aangeraakt
-    - Alleen descriptions bijgewerkt op interfaces
-    - Nieuwe config-items toegevoegd (bonus punten)
--->
 <config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
   <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
 
     <!-- HOSTNAME -->
     <hostname>LAB-RA07-C02-R01</hostname>
 
-    <!-- SERVICE TIMESTAMPS (nieuw - bonus) -->
+    <!-- SERVICE TIMESTAMPS -->
     <service>
       <timestamps>
         <debug>
@@ -31,40 +22,29 @@
       </timestamps>
     </service>
 
-    <!-- BANNER MOTD (nieuw - bonus/security)
-         Enkelvoudige string op één regel - IOS-XE YANG vereist dit. -->
+    <!-- BANNER MOTD -->
     <banner>
-      <motd>
-        <banner>*** WAARSCHUWING: Enkel geautoriseerde toegang. Activiteiten worden gelogd. LAB-RA07-C02-R01 ***</banner>
-      </motd>
+      <motd>*** WAARSCHING: Enkel geautoriseerde toegang. Activiteiten worden gelogd. LAB-RA07-C02-R01 ***</motd>
     </banner>
 
-    <!-- IP: DNS + HTTP HARDENING (nieuw - bonus)
-         Alles in één <ip> blok - twee aparte blokken
-         veroorzaken een YANG merge conflict. -->
+    <!-- IP SETTINGS -->
     <ip>
       <domain>
         <name>lab.local</name>
       </domain>
+
+      <!-- DNS -->
       <name-server>
         <no-vrf>
           <address>8.8.8.8</address>
-        </no-vrf>
-      </name-server>
-      <name-server>
-        <no-vrf>
           <address>8.8.4.4</address>
         </no-vrf>
       </name-server>
-      <http>
-        <server>false</server>
-        <secure-server>false</secure-server>
-      </http>
+
+      <!-- HTTP volledig verwijderd i.p.v. false -->
     </ip>
 
-    <!-- INTERFACES - ALLEEN DESCRIPTIONS
-         IPs, masks, encapsulation, shutdown NIET aangeraakt -->
-
+    <!-- INTERFACES (ENKEL DESCRIPTION) -->
     <interface>
       <GigabitEthernet>
         <name>0/0/0</name>
@@ -75,46 +55,46 @@
     <interface>
       <GigabitEthernet>
         <name>0/0/0.75</name>
-        <description>VLAN 75 - Management | 172.17.7.64/28 | DHCP-relay 10.199.64.66</description>
+        <description>VLAN 75 - Management | 172.17.7.64/28</description>
       </GigabitEthernet>
     </interface>
 
     <interface>
       <GigabitEthernet>
         <name>0/0/0.76</name>
-        <description>VLAN 76 - Data Users | 172.17.7.80/28 | DHCP-relay 10.199.64.66</description>
+        <description>VLAN 76 - Data Users | 172.17.7.80/28</description>
       </GigabitEthernet>
     </interface>
 
     <interface>
       <GigabitEthernet>
         <name>0/0/0.77</name>
-        <description>VLAN 77 - Voice | 172.17.7.96/28 | DHCP-relay 10.199.64.66</description>
+        <description>VLAN 77 - Voice | 172.17.7.96/28</description>
       </GigabitEthernet>
     </interface>
 
     <interface>
       <GigabitEthernet>
         <name>0/0/0.78</name>
-        <description>VLAN 78 - Reserved | 172.17.7.112/28 | DHCP-relay 10.199.64.66</description>
+        <description>VLAN 78 - Reserved | 172.17.7.112/28</description>
       </GigabitEthernet>
     </interface>
 
     <interface>
       <GigabitEthernet>
         <name>0/0/0.99</name>
-        <description>VLAN 99 - Native VLAN (untagged)</description>
+        <description>VLAN 99 - Native VLAN</description>
       </GigabitEthernet>
     </interface>
 
     <interface>
       <GigabitEthernet>
         <name>0/0/1</name>
-        <description>WAN Uplink | 10.199.65.96/27 | GW 10.199.65.100</description>
+        <description>WAN Uplink | 10.199.65.96/27</description>
       </GigabitEthernet>
     </interface>
 
-    <!-- NTP (nieuw - bonus) -->
+    <!-- NTP -->
     <ntp>
       <server>
         <server-list>
@@ -123,7 +103,7 @@
       </server>
     </ntp>
 
-    <!-- LOGGING / SYSLOG (nieuw - bonus) -->
+    <!-- LOGGING -->
     <logging>
       <host>
         <ipv4-host-list>
@@ -131,12 +111,9 @@
         </ipv4-host-list>
       </host>
       <trap>informational</trap>
-      <source-interface>
-        <interface-name>GigabitEthernet0/0/0.75</interface-name>
-      </source-interface>
     </logging>
 
-    <!-- VTY LINES - SSH HARDENING (nieuw - bonus) -->
+    <!-- VTY -->
     <line>
       <vty>
         <first>0</first>
@@ -156,25 +133,6 @@
       </vty>
     </line>
 
-    <!-- OSPF VERBETERINGEN (bonus)
-         no-passive-interface is het correcte YANG element
-         voor "no passive-interface GigabitEthernet0/0/1" -->
-    <router>
-      <ospf xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-ospf">
-        <id>1</id>
-        <passive-interface>
-          <interface>default</interface>
-        </passive-interface>
-        <no-passive-interface>
-          <interface>GigabitEthernet0/0/1</interface>
-        </no-passive-interface>
-        <default-information>
-          <originate>
-            <always/>
-          </originate>
-        </default-information>
-      </ospf>
-    </router>
-
   </native>
 </config>
+```

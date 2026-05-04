@@ -12,6 +12,7 @@ import requests
 from ncclient import manager
 from ncclient.transport.errors import SSHError, AuthenticationError
 from ncclient.operations.errors import TimeoutExpiredError
+import traceback
 
 # ─── INSTELLINGEN – pas deze aan naar jouw lab ─────────────────────────────
 GITHUB_RAW_URL = (
@@ -107,8 +108,11 @@ def deploy_config(config_xml: str) -> bool:
 
             except Exception as deploy_error:
                 # ── FOUTAFHANDELING: discard-changes ───────────────────────
-                print(f"\n[!] Fout tijdens deployment: {deploy_error}")
-                print("[!] Uitvoeren van discard-changes op candidate...")
+                print(f"\n[!] Fout tijdens deployment:")
+                print(f"    Type : {type(deploy_error).__name__}")
+                (f"    Detail: {str(deploy_error)}")
+                # Print full traceback for line number
+                traceback.print_exc()
                 try:
                     conn.discard_changes()
                     print("[+] discard-changes OK – candidate is teruggeplaatst naar running state")
