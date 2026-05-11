@@ -23,8 +23,11 @@
 
     <!-- BANNER MOTD -->
     <banner>
-      <motd>*** WAARSCHING: Enkel geautoriseerde toegang. Activiteiten worden gelogd. LAB-RA07-C02-R01 ***</motd>
+      <motd>
+        <banner>*** WAARSCHING: Enkel geautoriseerde toegang. Activiteiten worden gelogd. LAB-RA07-C02-R01 ***</banner>
+      </motd>
     </banner>
+
 
     <!-- IP SETTINGS -->
     <ip>
