@@ -1,24 +1,10 @@
 #!/usr/bin/env python3
-"""
-netconf_deploy.py
------------------
-Pulls a NETCONF XML configuration from a GitHub repository
-and applies it to a switch or router via NETCONF over SSH.
-
-Dependencies:
-    pip install ncclient requests lxml
-
-Usage:
-    python netconf_deploy.py
-    or edit the CONFIG block below / pass env variables.
-"""
-
 import os
 import sys
 import requests
 from lxml import etree
 from ncclient import manager
-from ncclient.operations.rpc import RPCError          # correct module path
+from ncclient.operations.rpc import RPCError
 from ncclient.operations.errors import TimeoutExpiredError
 from ncclient.transport.errors import AuthenticationError, SSHError
 
@@ -27,23 +13,20 @@ from ncclient.transport.errors import AuthenticationError, SSHError
 # ─────────────────────────────────────────────────────────────
 DEVICE = {
     "host":     os.getenv("NC_HOST",     "172.17.7.65"),
-    "port":     int(os.getenv("NC_PORT", "830")),          # NETCONF default = 830
+    "port":     int(os.getenv("NC_PORT", "830")),
     "username": os.getenv("NC_USER",     "admin"),
     "password": os.getenv("NC_PASS",     "cisco123"),
     "timeout":  int(os.getenv("NC_TIMEOUT", "30")),
-    # Set to False only in a trusted lab environment
     "hostkey_verify": False,
 }
 
-# Raw GitHub URL to your NETCONF XML config file
-# Example: https://raw.githubusercontent.com/you/repo/main/config.xml
 GITHUB_RAW_URL = os.getenv(
     "GITHUB_CONFIG_URL",
-    "https://raw.githubusercontent.com/DaanLoemanPXL/Enterprise-Networks-Automation/main/iosxe_04_services.xml"
+    "https://raw.githubusercontent.com/DaanLoemanPXL/Enterprise-Networks-Automation/main/iosxe_router_config.xml"
 )
 
 # NETCONF datastore to target: "running" | "candidate" | "startup"
-DATASTORE = os.getenv("NC_DATASTORE", "running")
+DATASTORE = os.getenv("NC_DATASTORE", "candidate")
 # ─────────────────────────────────────────────────────────────
 
 
@@ -149,14 +132,6 @@ def apply_config(xml_text: str):
         ) as conn:
             ok(f"NETCONF session established  "
                f"(session-id: {conn.session_id})")
-
-            # Print negotiated capabilities (summarised)
-            caps = list(conn.server_capabilities)
-            info(f"Server capabilities ({len(caps)} total) – first 5:")
-            for c in caps[:5]:
-                print(f"    {c}")
-            if len(caps) > 5:
-                print(f"    … and {len(caps) - 5} more.")
 
             # ── Edit-config ──────────────────────────────────
             info(f"Sending edit-config to datastore: [{DATASTORE}] …")
