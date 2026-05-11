@@ -34,7 +34,6 @@
       <domain>
         <name>lab.local</name>
       </domain>
-      <!-- HTTP volledig verwijderd i.p.v. false -->
     </ip>
 
     <!-- INTERFACES (ENKEL DESCRIPTION) -->
@@ -89,22 +88,11 @@
 
     <!-- NTP -->
     <ntp>
-      <server>
+      <server xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-ntp">
         <server-list>
           <ip-address>10.199.65.100</ip-address>
         </server-list>
       </server>
     </ntp>
-
-    <!-- LOGGING -->
-    <logging>
-      <host>
-        <ipv4-host-list>
-          <ipv4-host>10.199.64.66</ipv4-host>
-        </ipv4-host-list>
-      </host>
-      <trap>informational</trap>
-    </logging>
-
   </native>
 </config>
