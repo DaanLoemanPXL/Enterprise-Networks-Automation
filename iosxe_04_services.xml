@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
   <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
-    <logging>
-      <host>
-        <ipv4-host>10.199.64.66</ipv4-host>
-      </host>
-    </logging>
+    <line>
+      <vty>
+        <first>0</first>
+        <last>4</last>
+        <exec-timeout>
+          <minutes>10</minutes>
+          <seconds>0</seconds>
+        </exec-timeout>
+        <transport>
+          <input>
+            <input>ssh</input>
+          </input>
+        </transport>
+        <login>
+          <local/>
+        </login>
+      </vty>
+    </line>
   </native>
 </config>
