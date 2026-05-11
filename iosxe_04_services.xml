@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config>
+<!-- CHUNK 4 of 4 – NTP, Logging, VTY Lines -->
+<config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
   <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+
+    <ntp>
+      <server xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-ntp">
+        <server-list>
+          <ip-address>10.199.65.100</ip-address>
+          <version>4</version>
+        </server-list>
+      </server>
+    </ntp>
+
+    <logging>
+      <host xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-logging">
+        <ipv4-host-list>
+          <ipv4-host>10.199.64.66</ipv4-host>
+        </ipv4-host-list>
+      </host>
+    </logging>
+
     <line>
       <vty>
         <first>0</first>
@@ -19,5 +38,6 @@
         </login>
       </vty>
     </line>
+
   </native>
 </config>
