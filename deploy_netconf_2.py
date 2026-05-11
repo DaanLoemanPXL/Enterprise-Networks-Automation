@@ -39,7 +39,7 @@ DEVICE = {
 # Example: https://raw.githubusercontent.com/you/repo/main/config.xml
 GITHUB_RAW_URL = os.getenv(
     "GITHUB_CONFIG_URL",
-    "https://raw.githubusercontent.com/DaanLoemanPXL/Enterprise-Networks-Automation/main/iosxe_01_base.xml"
+    "https://raw.githubusercontent.com/DaanLoemanPXL/Enterprise-Networks-Automation/main/iosxe_router_config.xml"
 )
 
 # NETCONF datastore to target: "running" | "candidate" | "startup"
