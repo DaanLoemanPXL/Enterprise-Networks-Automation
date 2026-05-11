@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CHUNK 1 of 4 – Hostname, Service Timestamps, Banner MOTD -->
+<config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+  <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+
+    <hostname>LAB-RA07-C02-R01</hostname>
+
+    <service>
+      <timestamps>
+        <debug>
+          <datetime>
+            <msec/>
+          </datetime>
+        </debug>
+        <log>
+          <datetime>
+            <msec/>
+          </datetime>
+        </log>
+      </timestamps>
+    </service>
+
+    <banner>
+      <motd>
+        <banner>*** WAARSCHING: Enkel geautoriseerde toegang. Activiteiten worden gelogd. LAB-RA07-C02-R01 ***</banner>
+      </motd>
+    </banner>
+
+  </native>
+</config>
