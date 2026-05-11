@@ -4,7 +4,7 @@
   <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
 
     <ntp>
-      <server>
+      <server xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-ntp">
         <server-list>
           <ip-address>10.199.65.100</ip-address>
         </server-list>
@@ -12,12 +12,12 @@
     </ntp>
 
     <logging>
-      <host>
-        <ipv4-host-list>
+      <host xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-logging">
+        <ipv4-host-transport-list>
           <ipv4-host>10.199.64.66</ipv4-host>
-        </ipv4-host-list>
+        </ipv4-host-transport-list>
       </host>
-      <trap>
+      <trap xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-logging">
         <severity>informational</severity>
       </trap>
     </logging>
