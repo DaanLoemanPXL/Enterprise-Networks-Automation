@@ -3,6 +3,13 @@
 <config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
   <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
 
+    <ntp>
+      <server>
+        <server-list>
+          <ip-address>10.199.65.100</ip-address>
+        </server-list>
+      </server>
+    </ntp>
 
     <logging>
       <host>
@@ -10,7 +17,9 @@
           <ipv4-host>10.199.64.66</ipv4-host>
         </ipv4-host-list>
       </host>
-      <trap>informational</trap>
+      <trap>
+        <severity>informational</severity>
+      </trap>
     </logging>
 
     <line>
