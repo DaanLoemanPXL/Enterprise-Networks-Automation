@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CHUNK 3 of 4 – Interface Descriptions -->
+<config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+  <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+
+    <interface>
+      <GigabitEthernet>
+        <name>0/0/0</name>
+        <description>TRUNK - Naar distributieswitch (VLAN 75/76/77/78/99)</description>
+      </GigabitEthernet>
+    </interface>
+
+    <interface>
+      <GigabitEthernet>
+        <name>0/0/0.75</name>
+        <description>VLAN 75 - Management | 172.17.7.64/28</description>
+      </GigabitEthernet>
+    </interface>
+
+    <interface>
+      <GigabitEthernet>
+        <name>0/0/0.76</name>
+        <description>VLAN 76 - Data Users | 172.17.7.80/28</description>
+      </GigabitEthernet>
+    </interface>
+
+    <interface>
+      <GigabitEthernet>
+        <name>0/0/0.77</name>
+        <description>VLAN 77 - Voice | 172.17.7.96/28</description>
+      </GigabitEthernet>
+    </interface>
+
+    <interface>
+      <GigabitEthernet>
+        <name>0/0/0.78</name>
+        <description>VLAN 78 - Reserved | 172.17.7.112/28</description>
+      </GigabitEthernet>
+    </interface>
+
+    <interface>
+      <GigabitEthernet>
+        <name>0/0/0.99</name>
+        <description>VLAN 99 - Native VLAN</description>
+      </GigabitEthernet>
+    </interface>
+
+    <interface>
+      <GigabitEthernet>
+        <name>0/0/1</name>
+        <description>WAN Uplink | 10.199.65.96/27</description>
+      </GigabitEthernet>
+    </interface>
+
+  </native>
+</config>
