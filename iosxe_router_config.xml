@@ -115,25 +115,5 @@
       <trap>informational</trap>
     </logging>
 
-    <!-- VTY -->
-    <line>
-      <vty>
-        <first>0</first>
-        <last>4</last>
-        <exec-timeout>
-          <minutes>10</minutes>
-          <seconds>0</seconds>
-        </exec-timeout>
-        <transport>
-          <input>
-            <input>ssh</input>
-          </input>
-        </transport>
-        <login>
-          <local/>
-        </login>
-      </vty>
-    </line>
-
   </native>
 </config>
