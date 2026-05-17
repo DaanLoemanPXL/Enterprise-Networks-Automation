@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+  <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+
+    <!-- HOSTNAME -->
+    <hostname>LAB-RA07-C02-R01</hostname>
+
+    <!-- SERVICE TIMESTAMPS -->
+    <service>
+      <timestamps>
+        <debug>
+          <datetime>
+            <msec/>
+          </datetime>
+        </debug>
+        <log>
+          <datetime>
+            <msec/>
+          </datetime>
+        </log>
+      </timestamps>
+    </service>
+
+    <!-- BANNER MOTD -->
+    <banner>
+      <motd>
+        <banner>*** WAARSCHING: Enkel geautoriseerde toegang. Activiteiten worden gelogd. LAB-RA07-C02-R01 ***</banner>
+      </motd>
+    </banner>
+
+    <!-- IP SETTINGS -->
+    <ip>
+      <domain>
+        <name>lab.local</name>
+      </domain>
+    </ip>
+
+    <!-- ═══════════════════════════════════════════════════════
+         INTERFACES
+         ═══════════════════════════════════════════════════════ -->
+
+    <!-- Gi0/0/0 – fysieke trunk poort naar LAB-RA07-A02-SW01 (Gig 1/0/20) -->
+    <interface>
+      <GigabitEthernet>
+        <name>0/0/0</name>
+        <description>TRUNK - Naar LAB-RA07-A02-SW01 Gi1/0/20 (VLAN 75/76/77/78/99)</description>
+        <no-shutdown/>
+      </GigabitEthernet>
+    </interface>
+
+    <interface>
+      <GigabitEthernet>
+        <name>0/0/0.75</name>
+        <description>VLAN 75 - Management | R eigen IP: 172.17.7.67 | HSRP VIP: 172.17.7.65</description>
+        <encapsulation>
+          <dot1Q>
+            <vlan-id>75</vlan-id>
+          </dot1Q>
+        </encapsulation>
+        <ip>
+          <address>
+            <primary>
+              <!-- 3e adres van subnet = C02-R01 eigen IP -->
+              <address>172.17.7.67</address>
+              <mask>255.255.255.240</mask>
+            </primary>
+          </address>
+        </ip>
+        <standby xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-hsrp">
+          <standby-list>
+            <!-- Groepnummer = VLAN nummer -->
+            <group-number>75</group-number>
+            <ip>
+              <!-- 1e adres van subnet = HSRP virtual IP -->
+              <address>172.17.7.65</address>
+            </ip>
+            <!-- 110 = active/priority router (hoger dan standaard 100 van C01-R01) -->
+            <priority>110</priority>
+            <!-- Preempt: neemt automatisch active rol terug na herstel -->
+            <preempt/>
+            <timers>
+              <hello-interval>3</hello-interval>
+              <hold-time>10</hold-time>
+            </timers>
+          </standby-list>
+        </standby>
+      </GigabitEthernet>
+    </interface>
+
+    <interface>
+      <GigabitEthernet>
+        <name>0/0/0.76</name>
+        <description>VLAN 76 - Data_Users | R eigen IP: 172.17.7.83 | HSRP VIP: 172.17.7.81 | DHCP: .85-.94</description>
+        <encapsulation>
+          <dot1Q>
+            <vlan-id>76</vlan-id>
+          </dot1Q>
+        </encapsulation>
+        <ip>
+          <address>
+            <primary>
+              <address>172.17.7.83</address>
+              <mask>255.255.255.240</mask>
+            </primary>
+          </address>
+          <!-- Helper-address stuurt DHCP requests door naar DHCP/DNS/NTP server -->
+          <helper-address>
+            <address>10.199.64.66</address>
+          </helper-address>
+        </ip>
+        <standby xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-hsrp">
+          <standby-list>
+            <group-number>76</group-number>
+            <ip>
+              <address>172.17.7.81</address>
+            </ip>
+            <priority>110</priority>
+            <preempt/>
+            <timers>
+              <hello-interval>3</hello-interval>
+              <hold-time>10</hold-time>
+            </timers>
+          </standby-list>
+        </standby>
+      </GigabitEthernet>
+    </interface>
+
+    <interface>
+      <GigabitEthernet>
+        <name>0/0/0.77</name>
+        <description>VLAN 77 - Voice_Users | R eigen IP: 172.17.7.99 | HSRP VIP: 172.17.7.97</description>
+        <encapsulation>
+          <dot1Q>
+            <vlan-id>77</vlan-id>
+          </dot1Q>
+        </encapsulation>
+        <ip>
+          <address>
+            <primary>
+              <address>172.17.7.99</address>
+              <mask>255.255.255.240</mask>
+            </primary>
+          </address>
+        </ip>
+        <standby xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-hsrp">
+          <standby-list>
+            <group-number>77</group-number>
+            <ip>
+              <address>172.17.7.97</address>
+            </ip>
+            <priority>110</priority>
+            <preempt/>
+            <timers>
+              <hello-interval>3</hello-interval>
+              <hold-time>10</hold-time>
+            </timers>
+          </standby-list>
+        </standby>
+      </GigabitEthernet>
+    </interface>
+
+    <interface>
+      <GigabitEthernet>
+        <name>0/0/0.78</name>
+        <description>VLAN 78 - Reserved | R eigen IP: 172.17.7.115 | HSRP VIP: 172.17.7.113</description>
+        <encapsulation>
+          <dot1Q>
+            <vlan-id>78</vlan-id>
+          </dot1Q>
+        </encapsulation>
+        <ip>
+          <address>
+            <primary>
+              <address>172.17.7.115</address>
+              <mask>255.255.255.240</mask>
+            </primary>
+          </address>
+        </ip>
+        <standby xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-hsrp">
+          <standby-list>
+            <group-number>78</group-number>
+            <ip>
+              <address>172.17.7.113</address>
+            </ip>
+            <priority>110</priority>
+            <preempt/>
+            <timers>
+              <hello-interval>3</hello-interval>
+              <hold-time>10</hold-time>
+            </timers>
+          </standby-list>
+        </standby>
+      </GigabitEthernet>
+    </interface>
+
+    <!-- ───────────────────────────────────────────────────────
+         VLAN 99  –  Native VLAN  (geen IP, geen HSRP)
+         ─────────────────────────────────────────────────────── -->
+    <interface>
+      <GigabitEthernet>
+        <name>0/0/0.99</name>
+        <description>VLAN 99 - Native VLAN</description>
+        <encapsulation>
+          <dot1Q>
+            <vlan-id>99</vlan-id>
+            <native/>
+          </dot1Q>
+        </encapsulation>
+      </GigabitEthernet>
+    </interface>
+
+    <!-- ───────────────────────────────────────────────────────
+         Gi0/0/1  –  WAN Uplink naar LAB-BR-A-SW08 Fa0/14
+         IP: 10.199.65.114/27  (bron: document tabel RA0X-R RA07)
+         Default static route via next-hop LAB-BR-C-R03 (10.199.65.100)
+         ─────────────────────────────────────────────────────── -->
+    <interface>
+      <GigabitEthernet>
+        <name>0/0/1</name>
+        <description>WAN Uplink naar LAB-BR-A-SW08 Fa0/14 | 10.199.65.114/27</description>
+        <ip>
+          <address>
+            <primary>
+              <address>10.199.65.114</address>
+              <mask>255.255.255.224</mask>
+            </primary>
+          </address>
+        </ip>
+        <no-shutdown/>
+      </GigabitEthernet>
+    </interface>
+
+    <!-- ───────────────────────────────────────────────────────
+         DEFAULT STATIC ROUTE
+         Next-hop : 10.199.65.100 = LAB-BR-C-R03 (bron: diagram)
+         Per diagram: "Default Static route" via WAN interface
+         ─────────────────────────────────────────────────────── -->
+    <ip>
+      <route>
+        <ip-route-interface-forwarding-list>
+          <prefix>0.0.0.0</prefix>
+          <mask>0.0.0.0</mask>
+          <fwd-list>
+            <fwd>10.199.65.100</fwd>
+          </fwd-list>
+        </ip-route-interface-forwarding-list>
+      </route>
+    </ip>
+
+    <router>
+      <ospf xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-ospf">
+        <id>1</id>
+
+        <!-- Unieke identificatie van deze router in het OSPF domein -->
+        <router-id>172.17.7.67</router-id>
+
+        <!-- Geen OSPF hellos richting end-devices op LAN subinterfaces -->
+        <passive-interface>
+          <interface>GigabitEthernet0/0/0.75</interface>
+        </passive-interface>
+        <passive-interface>
+          <interface>GigabitEthernet0/0/0.76</interface>
+        </passive-interface>
+        <passive-interface>
+          <interface>GigabitEthernet0/0/0.77</interface>
+        </passive-interface>
+        <passive-interface>
+          <interface>GigabitEthernet0/0/0.78</interface>
+        </passive-interface>
+
+        <!-- Verdeelt de statische default route (0.0.0.0/0) via OSPF -->
+        <default-information>
+          <originate/>
+        </default-information>
+
+        <!-- VLAN 75 – Management  172.17.7.64/28  |  wildcard 0.0.0.15 -->
+        <network>
+          <ip>172.17.7.64</ip>
+          <mask>0.0.0.15</mask>
+          <area>0</area>
+        </network>
+
+        <!-- VLAN 76 – Data_Users  172.17.7.80/28  |  wildcard 0.0.0.15 -->
+        <network>
+          <ip>172.17.7.80</ip>
+          <mask>0.0.0.15</mask>
+          <area>0</area>
+        </network>
+
+        <!-- VLAN 77 – Voice_Users  172.17.7.96/28  |  wildcard 0.0.0.15 -->
+        <network>
+          <ip>172.17.7.96</ip>
+          <mask>0.0.0.15</mask>
+          <area>0</area>
+        </network>
+
+        <!-- VLAN 78 – Reserved  172.17.7.112/28  |  wildcard 0.0.0.15 -->
+        <network>
+          <ip>172.17.7.112</ip>
+          <mask>0.0.0.15</mask>
+          <area>0</area>
+        </network>
+
+        <!-- WAN  10.199.65.96/27  |  wildcard 0.0.0.31 -->
+        <network>
+          <ip>10.199.65.96</ip>
+          <mask>0.0.0.31</mask>
+          <area>0</area>
+        </network>
+
+      </ospf>
+    </router>
+
+    <!-- NTP server = LAB-BR-C-R03 (10.199.65.100 per diagram pagina 1) -->
+    <ntp>
+      <server xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-ntp">
+        <server-list>
+          <ip-address>10.199.65.100</ip-address>
+        </server-list>
+      </server>
+    </ntp>
+
+  </native>
+</config>

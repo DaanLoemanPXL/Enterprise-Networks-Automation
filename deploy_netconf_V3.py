@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
+"""
+NETCONF Configuration Deployment Tool
+Usage:
+    python deploy_netconf_2.py              → normal run
+    python deploy_netconf_2.py -XmlTonen   → normal run + full XML responses printed
+"""
 import os
 import sys
+import argparse
 import requests
 from lxml import etree
 from ncclient import manager
@@ -9,14 +16,29 @@ from ncclient.operations.errors import TimeoutExpiredError
 from ncclient.transport.errors import AuthenticationError, SSHError
 
 # ─────────────────────────────────────────────────────────────
+#  CLI Parameters
+# ─────────────────────────────────────────────────────────────
+parser = argparse.ArgumentParser(
+    description="NETCONF Configuration Deployment Tool",
+    formatter_class=argparse.RawTextHelpFormatter
+)
+parser.add_argument(
+    "-Detailed",
+    action="store_true",
+    default=False,
+    help="Print full raw XML for every NETCONF message (RPC replies, get-config response)"
+)
+ARGS = parser.parse_args()
+
+# ─────────────────────────────────────────────────────────────
 #  CONFIGURATION  –  edit here or use environment variables
 # ─────────────────────────────────────────────────────────────
 DEVICE = {
-    "host":     os.getenv("NC_HOST",     "172.17.7.65"),
-    "port":     int(os.getenv("NC_PORT", "830")),
-    "username": os.getenv("NC_USER",     "admin"),
-    "password": os.getenv("NC_PASS",     "cisco123"),
-    "timeout":  int(os.getenv("NC_TIMEOUT", "30")),
+    "host":           os.getenv("NC_HOST",     "192.168.68.55"), #172.17.7.65
+    "port":           int(os.getenv("NC_PORT", "830")),
+    "username":       os.getenv("NC_USER",     "cisco"), #admin
+    "password":       os.getenv("NC_PASS",     "cisco123!"), #cisco123
+    "timeout":        int(os.getenv("NC_TIMEOUT", "30")),
     "hostkey_verify": False,
 }
 
@@ -35,11 +57,41 @@ def ok(msg):    print(f"\033[92m[OK]    {msg}\033[0m")
 def warn(msg):  print(f"\033[93m[WARN]  {msg}\033[0m")
 def err(msg):   print(f"\033[91m[ERROR] {msg}\033[0m")
 def info(msg):  print(f"\033[94m[INFO]  {msg}\033[0m")
+def xml_print(msg): print(f"\033[90m{msg}\033[0m")
+
+
+# ── XML display helper (only active when -XmlTonen is passed) ─
+def show_xml(label: str, xml_string: str):
+    """
+    Pretty-prints a raw XML string to the terminal.
+    Only executes when the script is run with the -XmlTonen flag.
+
+    Example:
+        python deploy_netconf_2.py -XmlTonen
+    """
+    if not ARGS.Detailed:
+        return
+
+    separator = "─" * 60
+    xml_print(f"\n{separator}")
+    xml_print(f"  XML │ {label}")
+    xml_print(separator)
+
+    try:
+        # Parse and re-serialize with indentation for readability
+        root = etree.fromstring(xml_string.encode("utf-8"))
+        pretty = etree.tostring(root, pretty_print=True).decode("utf-8")
+        xml_print(pretty)
+    except Exception:
+        # If pretty-printing fails, show raw string as fallback
+        xml_print(xml_string)
+
+    xml_print(f"{separator}\n")
 
 
 # ── Step 1 – Pull configuration from GitHub ──────────────────
 def fetch_config_from_github(url: str) -> str:
-    info(f"Fetching configuration from GitHub …")
+    info("Fetching configuration from GitHub …")
     info(f"  URL: {url}")
     try:
         response = requests.get(url, timeout=10)
@@ -52,7 +104,7 @@ def fetch_config_from_github(url: str) -> str:
         err(f"  HTTP Status Code : {e.response.status_code}")
         sys.exit(1)
     except requests.exceptions.ConnectionError as e:
-        err(f"Connection error cannot reach GitHub: {e}")
+        err(f"Connection error – cannot reach GitHub: {e}")
         sys.exit(1)
     except requests.exceptions.Timeout:
         err("Request timed out while contacting GitHub.")
@@ -65,6 +117,10 @@ def validate_xml(xml_text: str) -> etree._Element:
     try:
         root = etree.fromstring(xml_text.encode("utf-8"))
         ok(f"XML is well-formed  (root tag: <{root.tag}>)")
+
+        # Show the full config XML that will be sent to the router
+        show_xml("CONFIG PAYLOAD (fetched from GitHub)", xml_text)
+
         return root
     except etree.XMLSyntaxError as e:
         err(f"XML parse error: {e}")
@@ -72,27 +128,30 @@ def validate_xml(xml_text: str) -> etree._Element:
 
 
 # ── Step 3 – Parse NETCONF RPC-reply for <ok> or <rpc-error> ─
-def parse_rpc_reply(reply):
+def parse_rpc_reply(reply, label: str = "RPC REPLY"):
     ns = "urn:ietf:params:xml:ns:netconf:base:1.0"
+
     try:
         root = etree.fromstring(reply.xml.encode("utf-8"))
+        # Show the raw XML reply if -XmlTonen was passed
+        show_xml(label, reply.xml)
     except Exception:
         return False, "Could not parse RPC reply XML."
 
     # <ok/> means success
     if root.find(f".//{{{ns}}}ok") is not None:
-        return True, "<ok/> received operation completed successfully."
+        return True, "<ok/> received – operation completed successfully."
 
     # Collect all <rpc-error> blocks
     errors = root.findall(f".//{{{ns}}}rpc-error")
     if errors:
         messages = []
         for rpc_err in errors:
-            etype   = _tag_text(rpc_err, f"{{{ns}}}error-type",     "unknown")
-            etag    = _tag_text(rpc_err, f"{{{ns}}}error-tag",      "unknown")
-            esev    = _tag_text(rpc_err, f"{{{ns}}}error-severity",  "unknown")
-            emsg    = _tag_text(rpc_err, f"{{{ns}}}error-message",   "")
-            epath   = _tag_text(rpc_err, f"{{{ns}}}error-path",      "")
+            etype = _tag_text(rpc_err, f"{{{ns}}}error-type",     "unknown")
+            etag  = _tag_text(rpc_err, f"{{{ns}}}error-tag",      "unknown")
+            esev  = _tag_text(rpc_err, f"{{{ns}}}error-severity", "unknown")
+            emsg  = _tag_text(rpc_err, f"{{{ns}}}error-message",  "")
+            epath = _tag_text(rpc_err, f"{{{ns}}}error-path",     "")
             block = (
                 f"  error-type    : {etype}\n"
                 f"  error-tag     : {etag}\n"
@@ -104,7 +163,7 @@ def parse_rpc_reply(reply):
             messages.append(block)
         return False, "\n".join(messages)
 
-    return False, "Unknown reply – neither <ok/> nor <rpc-error> found."
+    return False, "Unknown reply neither <ok/> nor <rpc-error> found."
 
 
 def _tag_text(parent, tag, default=""):
@@ -123,7 +182,7 @@ def apply_config(xml_text: str):
             password=DEVICE["password"],
             timeout=DEVICE["timeout"],
             hostkey_verify=DEVICE["hostkey_verify"],
-            device_params={"name": "default"},  # use "iosxr", "junos", "eos" etc. if known
+            device_params={"name": "default"},
         ) as conn:
             ok(f"NETCONF session established  "
                f"(session-id: {conn.session_id})")
@@ -135,7 +194,7 @@ def apply_config(xml_text: str):
                     target=DATASTORE,
                     config=xml_text
                 )
-                success, message = parse_rpc_reply(reply)
+                success, message = parse_rpc_reply(reply, label="EDIT-CONFIG REPLY")
                 if success:
                     ok(f"edit-config reply: {message}")
                 else:
@@ -155,7 +214,7 @@ def apply_config(xml_text: str):
                 info("Committing candidate configuration …")
                 try:
                     reply = conn.commit()
-                    success, message = parse_rpc_reply(reply)
+                    success, message = parse_rpc_reply(reply, label="COMMIT REPLY")
                     if success:
                         ok(f"commit reply: {message}")
                     else:
@@ -169,6 +228,41 @@ def apply_config(xml_text: str):
                     sys.exit(1)
 
             ok("Configuration deployment finished successfully.")
+
+            # ── Step 5 – Verify via get-config ───────────────
+            info("Verifying deployed configuration via get-config (running) …")
+            try:
+                reply = conn.get_config(source="running")
+
+                # Always show a confirmation line
+                ok("get-config reply received from router.")
+
+                # Full XML only visible with -XmlTonen
+                show_xml("GET-CONFIG RESPONSE (running datastore)", reply.xml)
+
+                # Parse and count interfaces as a basic sanity check
+                root = etree.fromstring(reply.xml.encode("utf-8"))
+
+                # Try both common YANG namespaces for interfaces
+                found = False
+                for ns_if in [
+                    "urn:ietf:params:xml:ns:yang:ietf-interfaces",
+                    "http://cisco.com/ns/yang/Cisco-IOS-XE-native",
+                ]:
+                    interfaces = root.findall(f".//{{{ns_if}}}interface")
+                    if interfaces:
+                        ok(f"Verification OK – {len(interfaces)} interface(s) found in running config.")
+                        found = True
+                        break
+
+                if not found:
+                    warn("Verification: could not locate interface elements "
+                         "(namespace mismatch possible). Use -XmlTonen to inspect the full response.")
+
+            except RPCError as e:
+                warn(f"get-config RPC error: {e.message}")
+            except Exception as e:
+                warn(f"get-config unexpected error: {type(e).__name__}: {e}")
 
     except AuthenticationError:
         err(f"Authentication failed for user '{DEVICE['username']}' on {DEVICE['host']}.")
@@ -188,6 +282,8 @@ def apply_config(xml_text: str):
 if __name__ == "__main__":
     print("=" * 60)
     print("  NETCONF Configuration Deployment Tool")
+    if ARGS.Detailed:
+        print("  [MODE] XML responses will be printed  (-XmlTonen)")
     print("=" * 60)
 
     xml_text = fetch_config_from_github(GITHUB_RAW_URL)

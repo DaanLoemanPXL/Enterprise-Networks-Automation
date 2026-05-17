@@ -1,0 +1,55 @@
+hostname LAB-RA07-C02-R01
+
+interface GigabitEthernet0/0/0
+ no ip address
+ no shutdown
+
+! Subinterface Vlan 75 – Management
+interface GigabitEthernet0/0/0.75
+ encapsulation dot1Q 75
+ ip address 172.17.7.65 255.255.255.240
+ ip helper-address 10.199.64.66
+
+! Subinterface Vlan 76 – Data Users
+interface GigabitEthernet0/0/0.76
+ encapsulation dot1Q 76
+ ip address 172.17.7.81 255.255.255.240
+ ip helper-address 10.199.64.66
+
+! Subinterface Vlan 77 – Voice
+interface GigabitEthernet0/0/0.77
+ encapsulation dot1Q 77
+ ip address 172.17.7.97 255.255.255.240
+ ip helper-address 10.199.64.66
+
+! Subinterface Vlan 78 – Reserved
+interface GigabitEthernet0/0/0.78
+ encapsulation dot1Q 78
+ ip address 172.17.7.113 255.255.255.240
+ ip helper-address 10.199.64.66
+
+! Native vlan subinterface
+interface GigabitEthernet0/0/0.99
+ encapsulation dot1Q 99 native
+
+! WAN interface
+interface GigabitEthernet0/0/1
+ ip address 10.199.65.114 255.255.255.224
+ no shutdown
+
+! Default route
+ip route 0.0.0.0 0.0.0.0 10.199.65.100
+
+username admin privilege 15 secret cisco123
+ip domain name lab.local
+crypto key generate rsa modulus 2048
+ip ssh version 2
+line vty 0 4
+ login local
+ transport input ssh
+netconf-yang
+netconf-yang feature candidate-datastore
+netconf-yang
+restconf
+
+end

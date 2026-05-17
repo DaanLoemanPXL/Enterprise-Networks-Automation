@@ -1,0 +1,48 @@
+hostname LAB-RA07-A01-SW01
+
+! VLANs aanmaken
+vlan 75
+ name Management
+vlan 76
+ name Data_Users
+vlan 77
+ name Voice_Users
+vlan 78
+ name Reserved
+vlan 99
+ name Native
+
+! Trunk poort richting router
+interface GigabitEthernet1/0/20
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 75,76,77,78,99
+ no shutdown
+
+! Access poort laptop
+interface GigabitEthernet1/0/1
+ switchport mode access
+ switchport access vlan 76
+ no shutdown
+
+! Management IP
+interface vlan 75
+ ip address 172.17.7.68 255.255.255.240
+ no shutdown
+
+! Default gateway richting router
+ip default-gateway 172.17.7.65
+
+username admin privilege 15 secret cisco123
+ip domain name lab.local
+crypto key generate rsa modulus 2048
+ip ssh version 2
+line vty 0 4
+ login local
+ transport input ssh
+ netconf-yang
+ netconf-yang feature candidate-datastore
+ netconf-yang
+ restconf
+ 
+end
