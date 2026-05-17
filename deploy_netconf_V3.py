@@ -34,17 +34,17 @@ ARGS = parser.parse_args()
 #  CONFIGURATION  –  edit here or use environment variables
 # ─────────────────────────────────────────────────────────────
 DEVICE = {
-    "host":           os.getenv("NC_HOST",     "192.168.68.55"), #172.17.7.65
+    "host":           os.getenv("NC_HOST",     "172.17.7.65"), #172.17.7.65
     "port":           int(os.getenv("NC_PORT", "830")),
-    "username":       os.getenv("NC_USER",     "cisco"), #admin
-    "password":       os.getenv("NC_PASS",     "cisco123!"), #cisco123
+    "username":       os.getenv("NC_USER",     "admin"), #admin
+    "password":       os.getenv("NC_PASS",     "cisco123"), #cisco123
     "timeout":        int(os.getenv("NC_TIMEOUT", "30")),
     "hostkey_verify": False,
 }
 
 GITHUB_RAW_URL = os.getenv(
     "GITHUB_CONFIG_URL",
-    "https://raw.githubusercontent.com/DaanLoemanPXL/Enterprise-Networks-Automation/main/iosxe_router_config.xml"
+    "https://raw.githubusercontent.com/DaanLoemanPXL/Enterprise-Networks-Automation/main/iosxe_router_config_v2.xml"
 )
 
 # NETCONF datastore to target: "running" | "candidate" | "startup"
