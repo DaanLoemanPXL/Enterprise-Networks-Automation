@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """
-NETCONF Configuration Deployment Tool
 Usage:
     python deploy_netconf_2.py              → normal run
     python deploy_netconf_2.py -XmlTonen   → normal run + full XML responses printed
@@ -44,7 +43,7 @@ DEVICE = {
 
 GITHUB_RAW_URL = os.getenv(
     "GITHUB_CONFIG_URL",
-    "https://raw.githubusercontent.com/DaanLoemanPXL/Enterprise-Networks-Automation/main/iosxe_router_config_v2.xml"
+    "https://raw.githubusercontent.com/DaanLoemanPXL/Enterprise-Networks-Automation/main/iosxe_router_config.xml"
 )
 
 # NETCONF datastore to target: "running" | "candidate" | "startup"
@@ -60,14 +59,14 @@ def info(msg):  print(f"\033[94m[INFO]  {msg}\033[0m")
 def xml_print(msg): print(f"\033[90m{msg}\033[0m")
 
 
-# ── XML display helper (only active when -XmlTonen is passed) ─
+# ── XML display helper (only active when -Detailed is passed) ─
 def show_xml(label: str, xml_string: str):
     """
     Pretty-prints a raw XML string to the terminal.
-    Only executes when the script is run with the -XmlTonen flag.
+    Only executes when the script is run with the -Detailed flag.
 
     Example:
-        python deploy_netconf_2.py -XmlTonen
+        python deploy_netconf_2.py -Detailed
     """
     if not ARGS.Detailed:
         return
