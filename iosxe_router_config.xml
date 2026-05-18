@@ -61,7 +61,7 @@
     <interface>
       <GigabitEthernet>
         <name>0/0/0.77</name>
-        <description>VLAN 77 - Voice | 172.17.7.96/28</description>
+        <description>VLAN 77 - Voice | 172.17.7.96/28 test</description>
       </GigabitEthernet>
     </interface>
 
